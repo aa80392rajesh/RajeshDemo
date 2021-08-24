@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+       stages {
+         stage ('install_req') {
+              steps{
+                 sshagent(credentials : ['tcopitv3_jump']) {
+                     echo "----------install request----------"
+                     sh 'ssh -o StrictHostKeyChecking=no tcopitv3@vlodjumpts00.dev.qintra.com ./NonStdJavaIM_Jenkins.sh $STS_Req_Number'
+                    }
+                }
+            }    
+          stage ('Versionchecker') {
+              steps{
+                  sshagent(credentials : ['tcopitv3']) {
+                      echo "----------Versionchecker----------"
+                      sh 'ssh -o StrictHostKeyChecking=no tcopitv3@suomt68i.dev.qintra.com ./Versionchecker.sh'
+                      sleep 15
+                    }
+                }
+            }
+            stage ('Url-Verification') {
+              steps{
+                  sshagent(credentials : ['tcopitv3_jump']) {
+                      echo "....verification TCOP-GP console...."
+                      sh 'ssh -o StrictHostKeyChecking=no tcopitv3@vlodjumpts00.dev.qintra.com ./URL_verification.sh http://suomt68i.dev.qintra.com:9365'
+                      echo "URL check Success"
+                    }
+                }
+            }
+        }
+    }
